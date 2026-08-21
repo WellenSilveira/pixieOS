@@ -1,0 +1,89 @@
+# Prompt de Desenvolvimento: Pixie OS v2.1 (App Desktop Offline-First)
+
+## 1. Visão Geral do Produto
+- **Tipo:** Aplicativo desktop nativo (React + Electron + Vite), rodando **100% offline**. Não é um site; possui janela própria, sem depender de internet para nenhuma função central ou persistência de dados.
+- **Nome:** Pixie OS
+- **Versão:** v2.1
+- **Proposta Central:** Central de controle corporativa (gestão de chamados de TI, inventário e usuários) com foco absoluto em resiliência local e transparência de sincronização.
+
+---
+
+## 2. Identidade Visual e Sistema de Design (Tema Prata / Azul-Acinzentado)
+
+Inspirado na robustez clássica e limpa de interfaces desktop profissionais (estilo Windows 2000 'Silver' adaptado para o padrão moderno de aplicativos Electron):
+
+**Paleta de Cores Monocromática (Prata / Cinza Metálico / Azul-Acinzentado):**
+- `#F0F2F5` — Fundo base da aplicação (cinza claro prateado, limpo e neutro)
+- `#E2E6EC` — Superfície de painéis, cartões e blocos de conteúdo
+- `#CBD2D9` — Elevação, bordas sutiles e estados de hover/seleção
+- `#334E68` — Azul-acinzentado escuro (cor de marca corporativa, títulos e ações primárias)
+- `#627D98` — Azul-acinzentado médio (para textos secundários, ícones desativados e bordas estruturais)
+- `#243B53` — Azul ardósia profundo (para texto principal e alta ênfase)
+- `#D97706` — Âmbar técnico (reservado exclusivamente para indicadores de aviso offline/sincronização pendente e alertas de atenção)
+- `#10B981` — Verde status (online / sincronizado / ativo / disponível)
+- `#EF4444` — Vermelho status (crítico / erro / defeito / falha grave)
+
+**Tipografia:**
+- Títulos e números de destaque: **Space Grotesk** (peso 600–700)
+- Corpo e UI geral: **Inter** (pesos 400–500)
+- Dados técnicos (IDs de chamados, números de série, timestamps de salvamento local, logs): **JetBrains Mono**, sempre em caixa-alta com espaçamento de letras ajustado (`letter-spacing`).
+
+**Geometria e Elevação:**
+- Cantos arredondados de **4px a 6px** em cartões, inputs e botões (comportamento sóbrio e profissional de desktop corporativo).
+- Ausência de sombras dramáticas; profundidade obtida por contraste de superfícies em camadas (`#F0F2F5` versus `#E2E6EC`).
+
+**Chrome de App Desktop (Obrigatório em todas as telas):**
+- **Barra de Título Customizada (Frameless Electron):** À esquerda, ícone minimalista + "Pixie OS v2.1"; ao centro/direita, indicador de conectividade em tempo real; à direita, controles nativos da janela (minimizar, maximizar, fechar).
+- **Sidebar (Estilo Rail):** Compacta, alternável entre ícones e rótulos, com o item ativo destacado por uma barra vertical lateral na cor de marca (`#334E68`).
+- **Rodapé da Sidebar:** Cartão do usuário logado (avatar, nome, cargo) e indicador estático de integridade: *"Dados locais: 1.248 registros · Backup local OK"*.
+
+---
+
+## 3. Fluxo de Autenticação e Permissões por Perfil
+
+- **Tela de Login:** Autenticação via CPF e senha validados estritamente contra o banco de dados local SQLite/IndexedDB embarcado. Texto de apoio: *"Pixie OS v2.1 — Funciona sem internet"*.
+- **Regra de Primeiro Acesso:** Se a senha for temporária, redirecionar o fluxo para a tela de *Atualizar Senha* antes de liberar o aplicativo principal.
+
+### Matriz de Visibilidade do Menu por Perfil:
+
+| Módulo / Tela | Usuário Comum | Resolutor | Supervisor | Administrador (ADM) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dashboard** | – | ✔ | ✔ | ✔ |
+| **Lista de Chamados** | ✔ (Apenas os próprios) | ✔ | ✔ | ✔ |
+| **Criar / Abrir Chamado** | ✔ | ✔ | ✔ | ✔ |
+| **Responder / Mudar Status** | – | ✔ | ✔ | ✔ |
+| **Histórico Completo** | – | – | ✔ | ✔ |
+| **Gestão de Usuários** | – | – | ✔ | ✔ |
+| **Inventário de Ativos** | – | – | ✔ | ✔ |
+| **Relatórios Locais** | – | – | ✔ | ✔ |
+| **Auditoria do Sistema** | – | – | ✔ (Leitura) | ✔ (Completa) |
+| **Configurações do Sistema**| – | – | – | ✔ |
+| **Notificações / Perfil** | ✔ | ✔ | ✔ | ✔ |
+
+---
+
+## 4. Relação de Telas a Desenvolver (Ordem de Geração)
+
+1. **Login** (CPF, senha, rodapé offline, indicador visual).
+2. **Atualizar Senha - Primeiro Acesso** (Validação de força de senha em tempo real).
+3. **Splash Screen / Carregamento Inicial** (Logo Pixie OS, barra de progresso de leitura do banco local).
+4. **Chamados - Visão Usuário Comum** (Foco nos chamados próprios e botão de abertura rápida).
+5. **Criar Chamado** (Formulário completo com indicação de rascunho salvo localmente a cada alteração).
+6. **Dashboard Principal** (Indicadores de SLA, chamados críticos, inventário e gráficos analíticos com a paleta cinza/azul).
+7. **Detalhes e Resposta de Chamado** (Thread de interações, selos de progresso em badges visuais, notas internas).
+8. **Histórico Completo de Chamados** (Tabela densa com filtros avançados para supervisores e ADM).
+9. **Gestão de Usuários** (Listagem, cadastro e atribuição de níveis de acesso).
+10. **Gestão de Inventário** (Ativos de TI, status de manutenção e vínculo direto com chamados).
+11. **Relatórios Locais** (Exportação em PDF/CSV diretamente para o disco do computador).
+12. **Auditoria** (Logs cronológicos de rastreabilidade de ações locais).
+13. **Configurações do Sistema** (Parâmetros globais, SLAs, diretório de armazenamento local e backup — restrito a ADM).
+14. **Central de Notificações** (Sino flutuante com alertas de vencimento de SLA e interações).
+15. **Meu Perfil e Preferências** (Dados cadastrais e ajustes visuais locais).
+16. **Aviso de Operação Offline Prolongada** (Banner informativo sutil, sem bloquear a usabilidade do app).
+
+---
+
+## 5. Diretrizes de Comportamento Offline (UX/UI)
+- Nenhuma mensagem de erro de rede ("sem conexão com o servidor") deve bloquear a interface.
+- Toda gravação de dados exibe feedback claro informando o salvamento direto no **disco local da máquina**.
+- Formulários devem implementar salvamento automático de rascunho em background para prevenir perda de dados em quedas de energia ou fechamento abrupto do desktop.
